@@ -1,4 +1,11 @@
-#載入LineBot所需要的套件
+# -*- coding: utf-8 -*-
+"""
+Created on Sat Aug 18 01:00:17 2018
+
+@author: linzino
+"""
+
+
 from flask import Flask, request, abort
 
 from linebot import (
@@ -8,12 +15,12 @@ from linebot.exceptions import (
     InvalidSignatureError
 )
 from linebot.models import *
-import re
 
 app = Flask(__name__)
 
 # 必須放上自己的Channel Access Token
 line_bot_api = LineBotApi('TeksLx/bfKMgl+UieDSGnS5e5MDsaOAGpI5BWCit9xL8oifQc0ovO9ZTsR22EO4Ieu3yzO5hS3FnqnCP0Jy2inZSROUpDgQlNrV1vkTQ1vWZA6H2HDlq7zyYvQ6dEx+puxdaw/QwPPXAnqLVFacMLAdB04t89/1O/w1cDnyilFU=')
+
 # 必須放上自己的Channel Secret
 handler = WebhookHandler('e5a97ef55c907249d53b828fb401d3c6')
 
@@ -39,9 +46,14 @@ def callback():
 #訊息傳遞區塊
 @handler.add(MessageEvent, message=TextMessage)
 def handle_message(event):
+    # 取得個人資料
     profile = line_bot_api.get_profile(event.source.user_id)
     nameid = profile.display_name
     uid = profile.user_id
+
+    print('uid: '+uid)
+    print('name:'+nameid)
+
     # 傳送圖片
     if event.message.text == '我要看文字雲週報':
         message = ImageSendMessage(
@@ -208,8 +220,5 @@ def handle_message(event):
     line_bot_api.reply_message(event.reply_token,message)
 
 
-#主程式
-import os
-if __name__ == "__main__":
-    port = int(os.environ.get('PORT', 5000))
-    app.run(host='0.0.0.0', port=port)
+if __name__ == '__main__':
+    app.run(debug=True)
